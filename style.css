@@ -1,0 +1,169 @@
+:root {
+  color-scheme: dark;
+  font-family: "Microsoft YaHei UI", "PingFang SC", system-ui, sans-serif;
+  color: #fafbfc;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; overflow: hidden; background: #27313a; }
+#view { display: block; width: 100vw; height: 100dvh; touch-action: none; }
+#view:focus { outline: none; }
+.overview-mode #view { cursor: grab; }
+#view.turning { cursor: grabbing; }
+.overview-mode #view.turning { cursor: grabbing; }
+#view.target { cursor: pointer; }
+.overview-mode .walking-help { display: none; }
+
+header, .controls, .key-guide, .aim, .feedback {
+  position: fixed;
+  z-index: 1;
+  pointer-events: none;
+}
+
+header {
+  top: 20px;
+  left: 22px;
+  padding: 10px 14px;
+  border: 1px solid #d9e8e72e;
+  border-radius: 9px;
+  background: #182021e3;
+}
+h1 { margin: 0; font-weight: 650; font-size: 18px; letter-spacing: .04em; }
+
+.controls {
+  top: 20px;
+  right: 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px 6px 12px;
+  border: 1px solid #d8e8f42a;
+  border-radius: 9px;
+  background: #182021ed;
+  color: #e2edf2;
+  font-size: 12px;
+}
+kbd {
+  display: inline-block;
+  margin-right: 3px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: #405061;
+}
+
+.key-guide {
+  z-index: 2;
+  top: 76px;
+  right: 22px;
+  width: min(360px, calc(100vw - 24px));
+  max-height: calc(100dvh - 88px);
+  overflow: auto;
+  padding: 12px 14px;
+  border: 1px solid #d8e8f42a;
+  border-radius: 10px;
+  background: #18292ff5;
+  font-size: 13px;
+  pointer-events: auto;
+}
+.key-guide dl { margin: 0; }
+.key-guide dl > div { display: grid; grid-template-columns: 95px 1fr; align-items: baseline; gap: 7px; padding: 6px 0; }
+.key-guide dl > div + div { border-top: 1px solid #d8e8f41c; }
+.key-guide dd { margin: 0; line-height: 1.5; }
+.key-guide kbd { min-width: 18px; padding: 1px 3px; text-align: center; }
+.aim {
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+.aim-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #ffffffe0;
+  box-shadow: 0 0 0 1px #16222699;
+}
+.aim-action, .feedback { text-shadow: 0 1px 3px #000, 0 0 5px #000; font-weight: 650; }
+.aim-action {
+  position: absolute;
+  top: 12px;
+  width: max-content;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 13px;
+}
+.feedback {
+  top: clamp(72px, 14vh, 140px);
+  left: 50%;
+  width: max-content;
+  max-width: calc(100vw - 28px);
+  transform: translateX(-50%);
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+}
+button {
+  pointer-events: auto;
+  border: 1px solid #a7cbd760;
+  border-radius: 7px;
+  padding: 7px 13px;
+  background: #2f4d5e;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+button:hover { background: #42687b; }
+button:focus-visible { outline: 2px solid #a6ecf1; outline-offset: 2px; }
+button:disabled { opacity: .55; cursor: default; }
+#overview-toggle, #help-toggle { padding: 6px 10px; font-size: 13px; white-space: nowrap; }
+
+.computer {
+  position: fixed;
+  z-index: 2;
+  left: 50%;
+  top: 48%;
+  width: min(580px, calc(100vw - 32px));
+  transform: translate(-50%, -50%);
+  border: 1px solid #69a9ba;
+  border-radius: 14px;
+  background: #122935;
+  overflow: hidden;
+  box-shadow: 0 0 0 100vmax #0b121a96, 0 15px 70px #000a;
+}
+.computer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid #69a9ba55;
+  background: #1b3b4b;
+}
+.computer-top button { font-size: 12px; }
+.computer-body {
+  min-height: 215px;
+  padding: 22px;
+  background: linear-gradient(145deg, #234959, #172a39);
+}
+.file { background: #355d68; }
+#notes {
+  margin-top: 15px;
+  padding: 14px;
+  border-radius: 7px;
+  background: #e2e9e9;
+  color: #192f39;
+  font-size: 14px;
+}
+#notes h2, #notes p, #notes ul { margin: 0 0 6px; }
+#notes h2 { font-size: 16px; }
+.error { position: fixed; z-index: 3; inset: 35% 20% auto; padding: 20px; background: #152a36; }
+
+@media (max-width: 660px) {
+  header { top: 12px; left: 12px; }
+  h1 { font-size: 17px; }
+  .controls { top: 12px; right: 12px; gap: 6px; padding: 5px; }
+  .walking-help { display: none; }
+  .key-guide { top: 60px; right: 12px; max-height: calc(100dvh - 72px); }
+}

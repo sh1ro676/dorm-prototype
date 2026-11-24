@@ -1,0 +1,11 @@
+{
+  "name": "dorm-prototype",
+  "private": true,
+  "scripts": {
+    "build": "esbuild src/scene.js --bundle --format=iife --global-name=DormScene --platform=browser --minify --legal-comments=inline --outfile=scene.js"
+  },
+  "dependencies": {
+    "esbuild": "0.28.2",
+    "three": "0.187.0"
+  }
+}

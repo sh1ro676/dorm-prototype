@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>宿舍实景重建</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="scene.js" defer></script>
+  <script src="interaction.js" defer></script>
+</head>
+<body>
+  <canvas id="view" tabindex="-1" aria-label="第一人称宿舍场景"></canvas>
+  <header>
+    <h1>宿舍实景重建</h1>
+  </header>
+  <div class="controls" aria-label="操作方法">
+    <span class="walking-help"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 走动</span>
+    <span class="walking-help">拖动鼠标转头 · 点击物品交互</span>
+    <button id="help-toggle" type="button" aria-controls="key-guide" aria-expanded="false" aria-keyshortcuts="H">键位</button>
+    <button id="overview-toggle" type="button" aria-pressed="false" aria-keyshortcuts="V">俯视全景</button>
+  </div>
+  <section id="key-guide" class="key-guide" aria-label="键位说明" hidden>
+    <dl>
+      <div><dt><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></dt><dd>走动、上下台阶</dd></div>
+      <div><dt><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></dt><dd>转头、抬头、低头</dd></div>
+      <div><dt><kbd>E</kbd></dt><dd>与准星对准的物件交互，靠近大门可直接开关</dd></div>
+      <div><dt><kbd>L</kbd></dt><dd>开关附近的顶灯、电脑桌灯或右桌台灯</dd></div>
+      <div><dt><kbd>F</kbd> <kbd>C</kbd></dt><dd>推拉对准或附近的椅子 · 坐下或起身</dd></div>
+      <div><dt><kbd>E</kbd> <kbd>C</kbd></dt><dd>分别开合床帘 · 从最上面两级台阶上床，在床上躺下或坐起</dd></div>
+      <div><dt><kbd>B</kbd></dt><dd>坐在床上时整理枕头和被子</dd></div>
+      <div><dt><kbd>1</kbd> <kbd>2</kbd></dt><dd>在电脑桌坐下后使用电脑 · 写作业</dd></div>
+      <div><dt><kbd>V</kbd> <kbd>H</kbd></dt><dd>切换俯视全景 · 显示键位</dd></div>
+      <div><dt><kbd>Esc</kbd></dt><dd>关闭面板、退出全景或下床</dd></div>
+    </dl>
+  </section>
+  <div id="aim" class="aim" aria-hidden="true">
+    <span class="aim-dot"></span>
+    <span id="aim-action" class="aim-action" hidden></span>
+  </div>
+  <p id="feedback" class="feedback" role="status" hidden></p>
+  <section id="computer" class="computer" hidden aria-label="宿舍电脑">
+    <div class="computer-top">
+      <strong>宿舍电脑</strong>
+      <button id="close-computer" type="button" aria-label="退出电脑">退出 · Esc</button>
+    </div>
+    <div class="computer-body">
+      <button id="open-notes" class="file" type="button">课程笔记</button>
+      <article id="notes" hidden>
+        <h2>课程笔记</h2>
+        <p>宿舍三维场景</p>
+        <ul><li>核对四个床位和共用台阶</li><li>试走过道，检查拉椅子和坐姿视角</li></ul>
+      </article>
+    </div>
+  </section>
+  <p id="error" class="error" role="alert" hidden>浏览器未能启动三维场景。请在开启硬件加速的 Chrome 或 Edge 中重新打开。</p>
+</body>
+</html>
