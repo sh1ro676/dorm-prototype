@@ -2,9 +2,15 @@
 
 这是一个元宇宙课程项目。场景参照真实照片，使用 Three.js 搭建可探索的四人宿舍。两侧各有两个上床下桌床位，同侧床位共用一组储物台阶。场景尺寸按照片比例估算。
 
+## 在线体验
+
+<https://sh1ro676.github.io/dorm-prototype/>
+
+无需下载、无需安装，浏览器直接打开即可。
+
 ## 打开方式
 
-1. 完整解压 ZIP。
+1. 完整解压 ZIP，或 `git clone https://github.com/sh1ro676/dorm-prototype.git`。
 2. 用 Chrome 或 Microsoft Edge 打开 [index.html](index.html)。
 3. 按 `W` 走进宿舍。按 `H` 或点右上角「键位」可查看操作方法。
 
@@ -45,3 +51,14 @@ npm run build
 ```
 
 构建会更新页面使用的 `scene.js`。Three.js 许可证见 [THREE-LICENSE.txt](THREE-LICENSE.txt)。
+
+## 协作方式
+
+仓库是公开的，协作者可以直接向 `main` 推送。
+
+- 仓库地址：<https://github.com/sh1ro676/dorm-prototype>
+- 第一次拉取：`git clone https://github.com/sh1ro676/dorm-prototype.git`
+- 修改前先 `git pull`，改完 `git add -A && git commit -m "说明" && git push`
+- **改了 `src/` 一定要 `npm ci && npm run build`，并把生成的 `scene.js` 一起提交。** 页面加载的是打包好的 `scene.js`，只改源码不提交构建产物，别人和线上看到的还是旧场景。
+- 不要提交 `node_modules/`（已在 `.gitignore` 中忽略）。
+- 提交后 GitHub Pages 会自动重新部署，一两分钟后线上页面即为最新版本。
