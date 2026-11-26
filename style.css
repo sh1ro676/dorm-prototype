@@ -158,6 +158,62 @@ button:disabled { opacity: .55; cursor: default; }
 }
 #notes h2, #notes p, #notes ul { margin: 0 0 6px; }
 #notes h2 { font-size: 16px; }
+.desktop-note {
+  margin: 12px 0 0;
+  color: #cfe0e6;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.desktop {
+  position: fixed;
+  z-index: 3;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(680px, calc(100vw - 24px));
+}
+.desktop-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid #69a9ba88;
+  border-radius: 10px;
+  background: #122935f2;
+  box-shadow: 0 8px 30px #0009;
+  font-size: 13px;
+}
+.desktop-state { flex: 1 1 auto; color: #b9d7e0; font-size: 12px; }
+.desktop-top button { padding: 5px 10px; font-size: 12px; white-space: nowrap; }
+.desktop-hint {
+  margin: 6px 0 0;
+  text-align: center;
+  color: #dbeaf0;
+  font-size: 12px;
+  text-shadow: 0 1px 3px #000, 0 0 5px #000;
+}
+.desktop-os-buffer {
+  position: fixed;
+  left: -12000px;
+  top: 0;
+  width: 640px;
+  height: 480px;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+}
+.os-drop {
+  position: fixed;
+  z-index: 4;
+  inset: 0;
+  display: none;
+  place-items: center;
+  border: 3px dashed #8fd6e2;
+  background: #0b121ab0;
+  pointer-events: none;
+}
+.os-drop.active { display: grid; }
+.os-drop p { padding: 18px 24px; border-radius: 12px; background: #172a39; font-size: 16px; }
 .error { position: fixed; z-index: 3; inset: 35% 20% auto; padding: 20px; background: #152a36; }
 
 @media (max-width: 660px) {

@@ -1,0 +1,7 @@
+{
+  "hda": "",
+  "hdaSize": 0,
+  "memoryMB": 128,
+  "state": "",
+  "_说明": "hda 填 Windows 镜像地址（相对页面或完整 URL），hdaSize 填镜像字节数（大于 32MB 时 v86 会分块请求），state 可选填 v86 快照地址。镜像不要提交进仓库，详见 docs/windows-desktop.md。"
+}

@@ -14,6 +14,7 @@ import {
   frontBed, rearBed, stairs, stairTreads, stationX
 } from "./furniture.js";
 import { buildComputerDeskLight, buildDeskLamp, buildLightSwitch, computerLampSwitch, deskLamp } from "./room-fixtures.js";
+export { clearDeskOsImage, createDeskOs, deskOsInfo, saveDeskOsImage } from "./desk-os.js";
 
 export const room = { halfWidth: 1.95, frontZ: .568, backZ: -6.20, height: 2.92, entryHalfWidth: .50 };
 const doorHalfWidth = room.entryHalfWidth - .005;
@@ -322,7 +323,7 @@ export function context(canvas) {
     const shadowPose = [...state.chairPositions, state.book, state.doorAngle, state.ceilingOn, state.computerLampOn,
       ...state.storageOpen, ...state.bedCurtains.flatMap(curtains => [curtains.aisle, curtains.stair]), ...state.bedding];
     const frame = [eye.x, eye.y, eye.z, eye.pitch, eye.yaw, state.screenOn, state.ink, state.deskLampOn,
-      state.overview, state.overviewYaw, state.overviewPitch, ...shadowPose];
+      state.overview, state.overviewYaw, state.overviewPitch, state.osTick || 0, ...shadowPose];
     if (!resized && previousFrame?.every((value, index) => value === frame[index])) return;
     previousFrame = frame;
     if (resized) {
@@ -365,5 +366,5 @@ export function context(canvas) {
     if (effects) effects.render();
     else renderer.render(scene, camera);
   }
-  return { render, storagePanels: storage.panels, beds };
+  return { render, storagePanels: storage.panels, beds, desk };
 }

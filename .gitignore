@@ -1,1 +1,6 @@
 node_modules/
+*.img
+*.iso
+*.raw
+# 仓库里唯一允许的镜像：KolibriOS（开源、可再分发），用于演示"真系统"链路
+!vendor/os/kolibri.img

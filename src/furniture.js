@@ -266,12 +266,32 @@ export function buildDeskInteraction(station, m) {
   paintPage(0);
   const pen = cylinder(notebook, m.black, .154, .010, .039, .0045, .144);
   pen.rotation.set(Math.PI / 2, 0, .13);
+  let liveTexture = null;
   return {
     update(state) {
       if (face.material !== (state.screenOn ? on : off)) face.material = state.screenOn ? on : off;
       screenGlow.intensity = state.screenOn ? .065 : 0;
       hingedCover.rotation.z = state.book * Math.PI * .994;
       paintPage(Math.floor(state.ink * written.length));
+    },
+    // 把 v86 输出的 512×288 画布换成显示器贴图，返回需要手动标脏的纹理。
+    showLiveScreen(source) {
+      if (liveTexture) liveTexture.dispose();
+      liveTexture = new THREE.CanvasTexture(source);
+      liveTexture.colorSpace = THREE.SRGBColorSpace;
+      liveTexture.minFilter = THREE.LinearFilter;
+      liveTexture.magFilter = THREE.LinearFilter;
+      liveTexture.generateMipmaps = false;
+      on.map = liveTexture;
+      on.needsUpdate = true;
+      return liveTexture;
+    },
+    clearLiveScreen() {
+      if (!liveTexture) return;
+      liveTexture.dispose();
+      liveTexture = null;
+      on.map = screenArt;
+      on.needsUpdate = true;
     }
   };
 }

@@ -16,6 +16,8 @@
 
 压缩包已包含浏览器运行所需的文件。体验时无需联网，也无需安装 Node.js。请在解压目录内打开页面。
 
+> 只有在使用「真 Windows 桌面」功能时才需要 `http(s)` 打开页面（浏览器不允许 `file://` 下的 wasm 请求）；其余功能双击 `index.html` 即可。
+
 ## 操作键位
 
 | 按键 | 操作 |
@@ -52,6 +54,14 @@ npm run build
 
 构建会更新页面使用的 `scene.js`。Three.js 许可证见 [THREE-LICENSE.txt](THREE-LICENSE.txt)。
 
+## 电脑里的真 Windows 桌面
+
+左边电脑桌的显示器可以跑一个真实的操作系统（v86 在浏览器里模拟 x86 机器，画面直接贴到显示器上）。按 `1` 打开电脑面板，点「启动真 Windows 桌面」即可。
+
+- 原理、镜像来源、`os-config.json` 配置、拖入 `.img` 的用法和排错：见 [docs/windows-desktop.md](docs/windows-desktop.md)
+- 只想看效果：打开 <https://sh1ro676.github.io/dorm-prototype/?demo=desk&os=vendor/os/kolibri.img&device=fda>（内置的 1.4MB 开源系统 KolibriOS，不需要准备 Windows 镜像）
+- Windows 镜像**不随仓库分发**（版权 + 体积），请自备，或用浏览器里拖入的方式加载。
+
 ## 协作方式
 
 仓库是公开的，协作者可以直接向 `main` 推送。
@@ -60,5 +70,5 @@ npm run build
 - 第一次拉取：`git clone https://github.com/sh1ro676/dorm-prototype.git`
 - 修改前先 `git pull`，改完 `git add -A && git commit -m "说明" && git push`
 - **改了 `src/` 一定要 `npm ci && npm run build`，并把生成的 `scene.js` 一起提交。** 页面加载的是打包好的 `scene.js`，只改源码不提交构建产物，别人和线上看到的还是旧场景。
-- 不要提交 `node_modules/`（已在 `.gitignore` 中忽略）。
+- 不要提交 `node_modules/` 和任何 Windows 磁盘镜像（`*.img` 已忽略；`vendor/os/kolibri.img` 是唯一的例外，它是开源系统）。
 - 提交后 GitHub Pages 会自动重新部署，一两分钟后线上页面即为最新版本。

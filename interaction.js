@@ -12,6 +12,14 @@
   const openNotes = document.getElementById("open-notes");
   const notes = document.getElementById("notes");
   const overviewButton = document.getElementById("overview-toggle");
+  const desktop = document.getElementById("desktop");
+  const desktopState = document.getElementById("desktop-state");
+  const desktopLock = document.getElementById("desktop-lock");
+  const desktopExit = document.getElementById("desktop-exit");
+  const bootDesktop = document.getElementById("boot-desktop");
+  const desktopNote = document.getElementById("desktop-note");
+  const osFile = document.getElementById("os-file");
+  const osDrop = document.getElementById("os-drop");
   const { room, chairs, door, colliders, screen, book, ceilingSwitch, computerLampSwitch,
     deskLamp, stairs, stairTreads } = DormScene;
   const computerChair = chairs[0];
@@ -22,7 +30,7 @@
   const state = {
     chairPositions: chairs.map(chair => chair.pushed), doorAngle: door.openAngle, seated: null, screenOn: false, book: 0, ink: 0,
     ceilingOn: true, deskLampOn: false, computerLampOn: true,
-    onBed: null, overview: false, overviewYaw: -.72, overviewPitch: .65
+    onBed: null, overview: false, overviewYaw: -.72, overviewPitch: .65, osTick: 0
   };
   const keyDown = new Set();
   const movementKeys = ["KeyW", "KeyA", "KeyS", "KeyD", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
@@ -35,9 +43,9 @@
   let bookTime = null;
   let drag = null;
   let statusUntil = 0;
-  let render, storagePanels, beds;
+  let render, storagePanels, beds, desk;
   try {
-    ({ render, storagePanels, beds } = DormScene.context(canvas));
+    ({ render, storagePanels, beds, desk } = DormScene.context(canvas));
   } catch (error) {
     document.getElementById("error").hidden = false;
     aim.hidden = true;
@@ -328,11 +336,139 @@
     statusUntil = 0;
     computer.hidden = false;
     openNotes.focus();
+    refreshDesktopPanel();
   }
 
   function exitComputer() {
+    if (osMode) exitDesktopMode();
+    deskOs?.pause();
     computer.hidden = true;
     canvas.focus({ preventScroll: true });
+  }
+
+  // ---- 真 Windows 桌面（v86）----
+  let deskOs = null;
+  let deskTexture = null;
+  let osMode = false;
+  let osBusy = false;
+
+  function setDesktopStatus(text) {
+    desktopNote.textContent = text || "";
+    desktopNote.hidden = !text;
+    desktopState.textContent = text || "";
+  }
+
+  function syncDesktopButtons() {
+    const running = Boolean(deskOs?.running);
+    bootDesktop.textContent = running ? "进入真系统" : "启动真 Windows 桌面";
+    desktop.hidden = !osMode;
+  }
+
+  async function refreshDesktopPanel() {
+    if (osBusy) return;
+    if (location.protocol === "file:") {
+      bootDesktop.disabled = true;
+      setDesktopStatus("真系统需要 http(s) 打开页面：用线上地址或在项目目录起一个本地服务器");
+      return;
+    }
+    bootDesktop.disabled = false;
+    const info = await DormScene.deskOsInfo();
+    if (info.available) {
+      bootDesktop.textContent = deskOs?.running ? "进入真系统" : "启动真 Windows 桌面";
+      setDesktopStatus(`${info.hint}：${info.label}`);
+    } else {
+      bootDesktop.textContent = "选择 Windows 镜像…";
+      setDesktopStatus(info.hint);
+    }
+  }
+
+  function lockPointer() {
+    if (document.pointerLockElement) return;
+    try {
+      const result = canvas.requestPointerLock();
+      if (result?.catch) result.catch(() => {});
+    } catch {
+      // 个别浏览器不支持指针锁定，退化成直接点击操作
+    }
+  }
+
+  function enterDesktopMode() {
+    osMode = true;
+    computer.hidden = true;
+    desktop.hidden = false;
+    keyDown.clear();
+    syncDesktopButtons();
+    lockPointer();
+  }
+
+  function exitDesktopMode() {
+    if (!osMode) return;
+    osMode = false;
+    desktop.hidden = true;
+    if (document.pointerLockElement) document.exitPointerLock();
+    deskOs?.pause();
+    keyDown.clear();
+    computer.hidden = false;
+    syncDesktopButtons();
+    refreshDesktopPanel();
+    canvas.focus({ preventScroll: true });
+  }
+
+  async function startDesktop() {
+    if (osBusy) return;
+    if (location.protocol === "file:") {
+      message("真系统需要 http(s) 打开页面");
+      return;
+    }
+    osBusy = true;
+    try {
+      const info = await DormScene.deskOsInfo();
+      if (!info.available) {
+        osFile.click();
+        return;
+      }
+      if (!deskOs) {
+        deskOs = DormScene.createDeskOs({ onStatus: (status, text) => {
+          setDesktopStatus(text);
+          if (status === "running") syncDesktopButtons();
+        } });
+        deskTexture = desk.showLiveScreen(deskOs.canvas);
+        deskOs.watchScreen();
+      }
+      state.screenOn = true;
+      await deskOs.start();
+      state.osTick = (state.osTick || 0) + 1;
+      enterDesktopMode();
+      syncDesktopButtons();
+    } catch (error) {
+      console.error(error);
+      setDesktopStatus(`启动失败：${error.message || error}`);
+      message(`真系统启动失败：${error.message || error}`);
+    } finally {
+      osBusy = false;
+    }
+  }
+
+  async function acceptImage(file) {
+    if (!file || osBusy) return;
+    if (file.size > 640 * 1024 * 1024) {
+      message("镜像超过 640 MB，换一个小一点的");
+      return;
+    }
+    osBusy = true;
+    try {
+      setDesktopStatus(`正在保存 ${file.name}…`);
+      const buffer = await file.arrayBuffer();
+      await DormScene.saveDeskOsImage(file.name, buffer);
+      setDesktopStatus(`已保存镜像：${file.name}`);
+    } catch (error) {
+      console.error(error);
+      message(`镜像保存失败：${error.message || error}`);
+      osBusy = false;
+      return;
+    }
+    osBusy = false;
+    await startDesktop();
   }
 
   function writeHomework() {
@@ -583,11 +719,16 @@
   }
 
   canvas.addEventListener("pointerdown", event => {
+    if (osMode) {
+      lockPointer();
+      return;
+    }
     if (event.button !== 0 || transition || !computer.hidden) return;
     drag = { x: event.clientX, y: event.clientY, total: 0 };
     canvas.setPointerCapture(event.pointerId);
   });
   canvas.addEventListener("pointermove", event => {
+    if (osMode) return;
     if (drag) {
       const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
       drag.total += Math.hypot(dx, dy);
@@ -602,6 +743,10 @@
     }
   });
   canvas.addEventListener("pointerup", event => {
+    if (osMode) {
+      drag = null;
+      return;
+    }
     if (!drag) return;
     const selected = drag.total < 5 ? targetAt(event.clientX, event.clientY) : null;
     drag = null;
@@ -684,12 +829,18 @@
     const { code } = event;
     if (code === "Escape") {
       if (event.repeat) return;
+      if (osMode) {
+        if (document.pointerLockElement) document.exitPointerLock();
+        else exitDesktopMode();
+        return;
+      }
       if (!computer.hidden) exitComputer();
       else if (!keyGuide.hidden) setHelp(false);
       else if (state.overview) toggleOverview();
       else if (state.onBed) leaveBed();
       return;
     }
+    if (osMode) return;
     if (!computer.hidden || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
     if (movementKeys.includes(code)) {
       keyDown.add(code);
@@ -710,6 +861,39 @@
   overviewButton.addEventListener("click", toggleOverview);
   closeComputer.addEventListener("click", exitComputer);
   openNotes.addEventListener("click", () => { notes.hidden = !notes.hidden; });
+  bootDesktop.addEventListener("click", () => {
+    if (deskOs?.running && !osMode) enterDesktopMode();
+    else startDesktop();
+  });
+  desktopLock.addEventListener("click", lockPointer);
+  desktopExit.addEventListener("click", exitDesktopMode);
+  osFile.addEventListener("change", () => {
+    acceptImage(osFile.files?.[0]);
+    osFile.value = "";
+  });
+  document.addEventListener("pointerlockchange", () => {
+    if (!osMode) return;
+    desktopLock.textContent = document.pointerLockElement === canvas ? "鼠标已锁定" : "锁定鼠标";
+  });
+
+  function draggingFiles(event) {
+    return Array.from(event.dataTransfer?.items || []).some(item => item.kind === "file");
+  }
+  window.addEventListener("dragover", event => {
+    if (!draggingFiles(event)) return;
+    event.preventDefault();
+    osDrop.classList.add("active");
+  });
+  window.addEventListener("dragleave", event => {
+    if (event.relatedTarget) return;
+    osDrop.classList.remove("active");
+  });
+  window.addEventListener("drop", event => {
+    if (!draggingFiles(event)) return;
+    event.preventDefault();
+    osDrop.classList.remove("active");
+    acceptImage(event.dataTransfer.files?.[0]);
+  });
 
   function move(dt) {
     const pressed = key => Number(keyDown.has(key));
@@ -756,9 +940,21 @@
       state.ink = clamp((now - writingSince) / 1230, 0, 1);
       if (state.ink >= 1) writingSince = null;
     }
+    if (deskOs && deskOs.paint(now)) {
+      if (deskTexture) deskTexture.needsUpdate = true;
+      state.osTick = (state.osTick || 0) + 1;
+    }
     updateHud(now);
     render(eye, state);
     requestAnimationFrame(frame);
+  }
+  // ?demo=desk：演示与截图用，直接从电脑桌前坐下开始。
+  if (new URLSearchParams(location.search).get("demo") === "desk") {
+    state.chairPositions[computerChair.index] = computerChair.pulled;
+    state.seated = computerChair;
+    Object.assign(eye, { x: computerChair.pulled + computerChair.side * .015, y: 1.19, z: computerChair.z,
+      yaw: turnToward(computerChair.yaw), pitch: -.235 });
+    useComputer();
   }
   requestAnimationFrame(frame);
 })();

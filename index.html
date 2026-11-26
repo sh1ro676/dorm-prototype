@@ -45,6 +45,9 @@
     </div>
     <div class="computer-body">
       <button id="open-notes" class="file" type="button">课程笔记</button>
+      <button id="boot-desktop" class="file" type="button">真 Windows 桌面</button>
+      <p id="desktop-note" class="desktop-note" role="status"></p>
+      <input id="os-file" type="file" accept=".img,.iso,.bin,.raw" hidden>
       <article id="notes" hidden>
         <h2>课程笔记</h2>
         <p>宿舍三维场景</p>
@@ -52,6 +55,16 @@
       </article>
     </div>
   </section>
+  <section id="desktop" class="desktop" hidden aria-label="真 Windows 桌面">
+    <div class="desktop-top">
+      <strong>真 Windows 桌面</strong>
+      <span id="desktop-state" class="desktop-state"></span>
+      <button id="desktop-lock" type="button">锁定鼠标</button>
+      <button id="desktop-exit" type="button">退出 · Esc</button>
+    </div>
+    <p class="desktop-hint">点击画面锁定鼠标；Esc 解锁鼠标，再按 Esc 退出</p>
+  </section>
+  <div id="os-drop" class="os-drop" aria-hidden="true"><p>松开鼠标载入 Windows 镜像</p></div>
   <p id="error" class="error" role="alert" hidden>浏览器未能启动三维场景。请在开启硬件加速的 Chrome 或 Edge 中重新打开。</p>
 </body>
 </html>
