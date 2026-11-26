@@ -111,23 +111,31 @@ function loadConfig() {
 async function fetchImageBuffer(url, onProgress) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`镜像加载失败（HTTP ${response.status}）`);
-  const total = Number(response.headers.get("content-length")) || 0;
+  // 服务器可能压缩响应：此时 content-length 是压缩后的大小，不能拿来预分配。
+  const encoded = Boolean(response.headers.get("content-encoding"));
+  const total = encoded ? 0 : Number(response.headers.get("content-length")) || 0;
   const reader = response.body?.getReader();
   if (!reader) return response.arrayBuffer();
-  const buffer = total ? new Uint8Array(total) : [];
+  const chunks = [];
   let received = 0;
+  const buffer = total > 0 ? new Uint8Array(total) : null;
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
-    if (total) buffer.set(value, received);
-    else buffer.push(value);
+    if (buffer && received + value.byteLength <= buffer.length) buffer.set(value, received);
+    else chunks.push(value);
     received += value.byteLength;
-    onProgress?.(total ? received / total : 0);
+    onProgress?.(total ? Math.min(received / total, 1) : 0);
   }
-  if (total) return buffer.buffer;
+  if (buffer && chunks.length === 0) return buffer.buffer;
   const joined = new Uint8Array(received);
   let offset = 0;
-  for (const chunk of buffer) {
+  if (buffer) {
+    const used = received - chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
+    joined.set(buffer.subarray(0, used));
+    offset = used;
+  }
+  for (const chunk of chunks) {
     joined.set(chunk, offset);
     offset += chunk.byteLength;
   }
