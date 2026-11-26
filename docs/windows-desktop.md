@@ -3,24 +3,23 @@
 宿舍左边电脑桌的显示器可以跑一个**真实操作系统**：用 [v86](https://github.com/copy/v86) 在浏览器里模拟一台 x86 电脑，把它的 VGA 输出当作显示器贴图。Windows 98 / 2000 / XP 只要能在这台模拟机上启动，显示器里看到的就是真的 Windows 桌面，可以用鼠标键盘操作。
 
 ```
-按 1 打开电脑面板 → 启动真 Windows 桌面 → 点击画面锁定鼠标 → 操作；Esc 解锁，再按 Esc 退出
+按 1 打开电脑面板 → 启动真系统 → 点击画面锁定鼠标 → 操作；Esc 解锁，再按 Esc 退出
 ```
 
 ## 先看效果（不用准备任何镜像）
 
-仓库里带了一个 1.4MB 的开源系统 [KolibriOS](../../vendor/os/NOTICE.md)，用来验证整条链路：
+仓库里带了一个 1.4MB 的开源系统 [KolibriOS](../../vendor/os/NOTICE.md)。**没有配置 Windows 镜像时，「启动真系统」默认启动的就是它**，点一下就能看到显示器里跑起真正的操作系统：
 
 ```
-http://localhost:8099/?demo=desk&os=vendor/os/kolibri.img&device=fda
+按 1 → 启动真系统
 ```
 
-线上地址同理：
+也可以直接用带参数的地址（演示时一步到位，`demo=desk` 会直接坐在电脑桌前）：
 
 ```
-https://sh1ro676.github.io/dorm-prototype/?demo=desk&os=vendor/os/kolibri.img&device=fda
+http://localhost:8099/?demo=desk
+https://sh1ro676.github.io/dorm-prototype/?demo=desk
 ```
-
-`demo=desk` 是演示模式，会直接坐在电脑桌前（录制汇报视频时很好用）。
 
 ## 三条接入 Windows 镜像的路
 

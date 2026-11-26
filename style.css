@@ -164,6 +164,9 @@ button:disabled { opacity: .55; cursor: default; }
   font-size: 12.5px;
   line-height: 1.5;
 }
+#pick-desktop { margin-left: 8px; }
+.desktop-help { margin: 6px 0 0; font-size: 12px; }
+.desktop-help a { color: #8fd6e2; }
 .desktop {
   position: fixed;
   z-index: 3;

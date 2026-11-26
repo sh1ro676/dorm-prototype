@@ -185,7 +185,8 @@ export async function deskOsInfo() {
   if (saved?.name) return { available: true, label: saved.name, hint: "来自浏览器里保存的镜像" };
   const config = await loadConfig();
   if (config?.hda) return { available: true, label: fileNameOf(config.hda), hint: "来自 os-config.json" };
-  return { available: false, label: "", hint: "还没有 Windows 镜像：把 .img 文件拖进页面，或在 os-config.json 填写镜像地址" };
+  return { available: true, builtin: true, label: "KolibriOS（内置开源演示系统）",
+    hint: "没有配置 Windows 镜像，先用内置演示系统看效果；Windows 镜像需自备" };
 }
 
 async function resolveSource(onProgress) {
@@ -207,7 +208,11 @@ async function resolveSource(onProgress) {
       memoryMB, device, stateUrl: config.state || "", onProgress
     };
   }
-  return null;
+  // 没有 Windows 镜像时退回内置的开源系统，保证「启动」按钮开箱可用。
+  return {
+    label: "KolibriOS（内置开源演示系统）", url: "vendor/os/kolibri.img", size: 1474560,
+    memoryMB: 64, device: "fda", stateUrl: "", onProgress
+  };
 }
 
 export function createDeskOs(options = {}) {
@@ -294,11 +299,11 @@ export function createDeskOs(options = {}) {
     }
     report("loading", "正在读取 Windows 镜像…");
     const source = await resolveSource(progress => {
-      report("loading", `正在读取 Windows 镜像… ${Math.round(progress * 100)}%`);
+      report("loading", `正在读取系统镜像… ${Math.round(progress * 100)}%`);
     });
     if (!source) throw new Error("没有找到 Windows 镜像");
     const V86 = await loadV86();
-    report("loading", source.buffer ? "正在准备镜像…" : "正在下载 Windows 镜像…");
+    report("loading", source.buffer ? "正在准备镜像…" : "正在下载系统镜像…");
     let disk;
     if (source.buffer) {
       disk = { buffer: source.buffer, size: source.buffer.byteLength };
@@ -309,7 +314,7 @@ export function createDeskOs(options = {}) {
       const buffer = await fetchImageBuffer(source.url, source.onProgress);
       disk = { buffer, size: buffer.byteLength };
     }
-    report("booting", "正在启动 Windows…");
+    report("booting", "正在启动系统…");
     const options = {
       screen_container: container,
       wasm_path: `${ASSET_ROOT}v86.wasm`,
@@ -328,7 +333,7 @@ export function createDeskOs(options = {}) {
     await waitUntil(() => emulator?.is_running?.() === true, 30000);
     running = true;
     pendingPaint = true;
-    report("booting", "正在启动 Windows…");
+    report("booting", "正在启动系统…");
     // 纯文本模式（DOS 类系统）画布一直是 300×150，给一个兜底超时。
     setTimeout(() => {
       if (status === "booting") report("running", "真系统运行中（画面若全黑，检查镜像类型 hda/fda/cdrom 是否匹配）");

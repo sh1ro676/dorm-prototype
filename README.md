@@ -56,11 +56,12 @@ npm run build
 
 ## 电脑里的真 Windows 桌面
 
-左边电脑桌的显示器可以跑一个真实的操作系统（v86 在浏览器里模拟 x86 机器，画面直接贴到显示器上）。按 `1` 打开电脑面板，点「启动真 Windows 桌面」即可。
+左边电脑桌的显示器可以跑一个真实的操作系统（v86 在浏览器里模拟 x86 机器，画面直接贴到显示器上）。按 `1` 打开电脑面板，点「启动真系统」——**不需要准备任何镜像**，默认启动的是内置的 1.4MB 开源系统 KolibriOS，用来演示整条链路。
 
-- 原理、镜像来源、`os-config.json` 配置、拖入 `.img` 的用法和排错：见 [docs/windows-desktop.md](docs/windows-desktop.md)
-- 只想看效果：打开 <https://sh1ro676.github.io/dorm-prototype/?demo=desk&os=vendor/os/kolibri.img&device=fda>（内置的 1.4MB 开源系统 KolibriOS，不需要准备 Windows 镜像）
-- Windows 镜像**不随仓库分发**（版权 + 体积），请自备，或用浏览器里拖入的方式加载。
+- 想换成真正的 Windows：自备一份可启动的 `.img`，点「选择 Windows 镜像…」选文件，或拖进页面；也可以在 `os-config.json` 填地址（适合团队统一配置）
+- 原理、镜像来源、配置项、排错和版权说明：见 [docs/windows-desktop.md](docs/windows-desktop.md)
+- 演示一键直达：<https://sh1ro676.github.io/dorm-prototype/?demo=desk>
+- Windows 镜像**不随仓库分发**（微软版权 + 300MB 起），请自行准备
 
 ## 协作方式
 

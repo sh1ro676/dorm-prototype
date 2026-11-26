@@ -17,6 +17,7 @@
   const desktopLock = document.getElementById("desktop-lock");
   const desktopExit = document.getElementById("desktop-exit");
   const bootDesktop = document.getElementById("boot-desktop");
+  const pickDesktop = document.getElementById("pick-desktop");
   const desktopNote = document.getElementById("desktop-note");
   const osFile = document.getElementById("os-file");
   const osDrop = document.getElementById("os-drop");
@@ -360,7 +361,7 @@
 
   function syncDesktopButtons() {
     const running = Boolean(deskOs?.running);
-    bootDesktop.textContent = running ? "进入真系统" : "启动真 Windows 桌面";
+    bootDesktop.textContent = running ? "进入真系统" : "启动真系统";
     desktop.hidden = !osMode;
   }
 
@@ -368,18 +369,13 @@
     if (osBusy) return;
     if (location.protocol === "file:") {
       bootDesktop.disabled = true;
-      setDesktopStatus("真系统需要 http(s) 打开页面：用线上地址或在项目目录起一个本地服务器");
+      setDesktopStatus("真系统需要 http(s) 打开页面（线上地址或本地服务器）；双击 file:// 只能用静态假桌面");
       return;
     }
     bootDesktop.disabled = false;
     const info = await DormScene.deskOsInfo();
-    if (info.available) {
-      bootDesktop.textContent = deskOs?.running ? "进入真系统" : "启动真 Windows 桌面";
-      setDesktopStatus(`${info.hint}：${info.label}`);
-    } else {
-      bootDesktop.textContent = "选择 Windows 镜像…";
-      setDesktopStatus(info.hint);
-    }
+    bootDesktop.textContent = deskOs?.running ? "进入真系统" : info.builtin ? "启动内置演示系统" : "启动真 Windows 桌面";
+    setDesktopStatus(info.builtin ? info.hint : `${info.hint}：${info.label}`);
   }
 
   function lockPointer() {
@@ -867,6 +863,7 @@
   });
   desktopLock.addEventListener("click", lockPointer);
   desktopExit.addEventListener("click", exitDesktopMode);
+  pickDesktop.addEventListener("click", () => osFile.click());
   osFile.addEventListener("change", () => {
     acceptImage(osFile.files?.[0]);
     osFile.value = "";
